@@ -102,6 +102,6 @@ MIT License
 
 ---
 
-**개발자**: 홍길동  
-**이메일**: hong@example.com  
-**GitHub**: [@username](https://github.com/username)
+**개발자**: 김현재 (DEV HJ)  
+**이메일**: kimhyunjae114@gmail.com  
+**GitHub**: [@kiming0604](https://github.com/kiming0604)
