@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { 
   EnvelopeIcon, 
   PhoneIcon, 
@@ -15,12 +15,10 @@ import {
   RocketLaunchIcon,
   TrophyIcon,
   UserGroupIcon,
-  ArrowTopRightOnSquareIcon,
-  HomeIcon,
-  ChevronUpIcon
+  HomeIcon
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
-import Link from "next/link"
+// import Link from "next/link"
 import { useState, useEffect } from "react"
 
 interface Skill {
@@ -35,7 +33,7 @@ interface LifeChapter {
   title: string
   subtitle: string
   description: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   bgColor: string
   personIcon: string
 }
