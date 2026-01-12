@@ -15,7 +15,9 @@ import {
   RocketLaunchIcon,
   TrophyIcon,
   UserGroupIcon,
-  HomeIcon
+  HomeIcon,
+  CurrencyDollarIcon,
+  BuildingOfficeIcon
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
 // import Link from "next/link"
@@ -125,6 +127,24 @@ export default function Home() {
       icon: UserGroupIcon,
       bgColor: "from-emerald-500 to-teal-500",
       personIcon: "developer"
+    },
+    {
+      id: 8,
+      title: "블록체인과의 첫 만남",
+      subtitle: "뉴웨이블 (newavle)",
+      description: "뉴웨이블에 취직하여 코인과 토큰 스왑 사이트 개발 및 락업 관리 시스템을 구축하며 블록체인의 기초를 다졌습니다. Web3 생태계의 핵심 기술을 경험하며 분산형 금융(DeFi)의 가능성을 발견했습니다.",
+      icon: CurrencyDollarIcon,
+      bgColor: "from-amber-500 to-yellow-500",
+      personIcon: "blockchain"
+    },
+    {
+      id: 9,
+      title: "스타트업 창립멤버",
+      subtitle: "JNW LABS - SNAX 프로젝트",
+      description: "JNW LABS 스타트업의 창립멤버로서 SNAX 프로젝트의 기반을 다졌습니다. 텔레그램 웹게임인 SNAX CAT에서 기획자의 엑셀 데이터를 비즈니스 로직으로 가공하여 API 데이터로 전환하고, 전체적인 메타데이터 관리 및 업데이트를 담당했습니다. SNAX CAT 백엔드 개발과 CMS 페이지 개발을 통해 풀스택 개발자로서의 역량을 키웠습니다.",
+      icon: BuildingOfficeIcon,
+      bgColor: "from-cyan-500 to-blue-500",
+      personIcon: "startup"
     }
   ]
 
@@ -206,7 +226,7 @@ export default function Home() {
       const scrollPosition = window.scrollY
       const windowHeight = window.innerHeight
       const sectionIndex = Math.floor(scrollPosition / windowHeight)
-      setCurrentSection(Math.min(sectionIndex, 8)) // 총 9개 섹션 (7개 챕터 + 1개 About)
+      setCurrentSection(Math.min(sectionIndex, 9)) // 총 10개 섹션 (9개 챕터 + 1개 About)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -397,6 +417,50 @@ export default function Home() {
             <rect x="10.5" y="13.4" width="3" height="0.3" fill="black"/>
           </svg>
         )
+      case 'blockchain':
+        return (
+          <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+            {/* 블록체인 개발자 */}
+            {/* 머리 */}
+            <circle cx="12" cy="7" r="2.5" fill="#FFD700"/>
+            {/* 몸통 */}
+            <rect x="9.5" y="9.5" width="5" height="6" fill="#F59E0B" rx="1"/>
+            {/* 팔 */}
+            <rect x="7" y="10" width="2" height="4" fill="#F59E0B" rx="1"/>
+            <rect x="15" y="10" width="2" height="4" fill="#F59E0B" rx="1"/>
+            {/* 다리 */}
+            <rect x="10" y="15.5" width="1.5" height="3" fill="#F59E0B" rx="0.5"/>
+            <rect x="12.5" y="15.5" width="1.5" height="3" fill="#F59E0B" rx="0.5"/>
+            {/* 블록체인 체인 */}
+            <circle cx="10" cy="11.5" r="1" fill="gold" stroke="black" strokeWidth="0.2"/>
+            <circle cx="12" cy="11.5" r="1" fill="gold" stroke="black" strokeWidth="0.2"/>
+            <circle cx="14" cy="11.5" r="1" fill="gold" stroke="black" strokeWidth="0.2"/>
+            <path d="M11 11.5 L13 11.5" stroke="black" strokeWidth="0.3"/>
+            <path d="M13 11.5 L15 11.5" stroke="black" strokeWidth="0.3"/>
+          </svg>
+        )
+      case 'startup':
+        return (
+          <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+            {/* 스타트업 창립멤버 */}
+            {/* 머리 */}
+            <circle cx="12" cy="7" r="2.5" fill="#FFD700"/>
+            {/* 몸통 */}
+            <rect x="9.5" y="9.5" width="5" height="6" fill="#06B6D4" rx="1"/>
+            {/* 팔 */}
+            <rect x="7" y="10" width="2" height="4" fill="#06B6D4" rx="1"/>
+            <rect x="15" y="10" width="2" height="4" fill="#06B6D4" rx="1"/>
+            {/* 다리 */}
+            <rect x="10" y="15.5" width="1.5" height="3" fill="#06B6D4" rx="0.5"/>
+            <rect x="12.5" y="15.5" width="1.5" height="3" fill="#06B6D4" rx="0.5"/>
+            {/* 스타트업 아이콘 - 로켓/빌딩 */}
+            <rect x="10.5" y="11" width="3" height="2" fill="white" rx="0.2"/>
+            <rect x="11" y="10.5" width="2" height="0.5" fill="white" rx="0.1"/>
+            <rect x="11.5" y="10" width="1" height="0.5" fill="white" rx="0.1"/>
+            {/* 별 */}
+            <path d="M12 8.5 L12.3 9.2 L13 9.2 L12.5 9.6 L12.7 10.3 L12 9.9 L11.3 10.3 L11.5 9.6 L11 9.2 L11.7 9.2 Z" fill="gold"/>
+          </svg>
+        )
       default:
         return <UserIcon className="w-12 h-12 text-white" />
     }
@@ -502,7 +566,7 @@ export default function Home() {
       ))}
 
       {/* Fixed Progress Bar - Always Visible */}
-      {currentSection < 7 && (
+      {currentSection < 9 && (
         <div className="fixed bottom-8 left-0 right-0 z-50">
           <div className="max-w-md mx-auto">
             <div className="flex items-center justify-center mb-2">
@@ -524,7 +588,7 @@ export default function Home() {
                 <div className="h-2 bg-green-400 rounded-full relative">
                   <div 
                     className="h-2 bg-green-300 rounded-full transition-all duration-1000 ease-in-out"
-                    style={{ width: `${currentSection === 6 ? 100 : Math.min((currentSection / 6) * 100, 100)}%` }}
+                    style={{ width: `${currentSection === 8 ? 100 : Math.min((currentSection / 8) * 100, 100)}%` }}
                   ></div>
                 </div>
               </div>
@@ -550,7 +614,7 @@ export default function Home() {
       {/* About Section */}
       <section 
         className="h-screen flex items-center justify-center fixed inset-0"
-        style={getSectionStyle(7)}
+        style={getSectionStyle(9)}
       >
         <div className="max-w-4xl mx-auto px-8">
           <h2 className="text-4xl font-bold text-gray-100 mb-8 text-center">
@@ -574,7 +638,7 @@ export default function Home() {
       </section>
 
       {/* Spacer for animated sections */}
-      <div style={{ height: `${9 * 100}vh` }}></div>
+      <div style={{ height: `${10 * 100}vh` }}></div>
 
       {/* Header - Personal Info */}
       <section id="about-section" className="min-h-screen flex items-center justify-center text-center py-20">
