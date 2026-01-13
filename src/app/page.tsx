@@ -448,7 +448,6 @@ export default function Home() {
     const isActive = currentSection === sectionIndex
     const isNext = currentSection === sectionIndex + 1
     const isPrev = currentSection === sectionIndex - 1
-    const isFarAway = Math.abs(currentSection - sectionIndex) > 1
 
     if (isActive) {
       return {
@@ -1137,13 +1136,13 @@ export default function Home() {
                 저는 개발자로서 코드를 작성하는 것 보다 코드를 작성하는 과정에서 발생하는 문제를 해결하고 그 과정을 기록하고 기억하는 것이 더 중요하다고 생각합니다.
               </p>
               <p>
-                저는 상급자와 하급자의 차이는 경험에서 나온다고 생각합니다. 제가 여러 직종을 거치며 처음 일을 시작 할 때 마다 <span className="font-bold text-gray-200">"내가 3번에 걸쳐 할 일을 어떻게 상급자는 1번만 해도 해결될까?"</span> 그 이유에 대해서 스스로 고민했었습니다 저의 결론은 <span className="font-bold text-gray-200">"여러가지 상황을 맞닥뜨리고 그것을 해결하면서 생긴 노하우와 경험"</span>이 그 차이를 만든다는 것 입니다. 여기서 저는 또 생각했습니다 <span className="font-bold text-gray-200">"어떻게 해야 그 차이를 더 빠르게 줄일 수 있을까?"</span> 그 답은 <span className="font-bold text-gray-200">"문서화"</span> 였습니다 <span className="font-bold text-gray-200">"요리를 하며 본 주방장님의 칼질과 조리순서에 대한 노하우, 건설현장에서 노동을 하며 본 반장님의 노하우, 개발 회사를 다니며 사수에게 배운 여러가지 상황에서의 대처법과 노하우"</span>. 셋다 분야는 다르지만 저에게는 다르지 않다고 느껴졌습니다.
+                저는 상급자와 하급자의 차이는 경험에서 나온다고 생각합니다. 제가 여러 직종을 거치며 처음 일을 시작 할 때 마다 <span className="font-bold text-gray-200">&ldquo;내가 3번에 걸쳐 할 일을 어떻게 상급자는 1번만 해도 해결될까?&rdquo;</span> 그 이유에 대해서 스스로 고민했었습니다 저의 결론은 <span className="font-bold text-gray-200">&ldquo;여러가지 상황을 맞닥뜨리고 그것을 해결하면서 생긴 노하우와 경험&rdquo;</span>이 그 차이를 만든다는 것 입니다. 여기서 저는 또 생각했습니다 <span className="font-bold text-gray-200">&ldquo;어떻게 해야 그 차이를 더 빠르게 줄일 수 있을까?&rdquo;</span> 그 답은 <span className="font-bold text-gray-200">&ldquo;문서화&rdquo;</span> 였습니다 <span className="font-bold text-gray-200">&ldquo;요리를 하며 본 주방장님의 칼질과 조리순서에 대한 노하우, 건설현장에서 노동을 하며 본 반장님의 노하우, 개발 회사를 다니며 사수에게 배운 여러가지 상황에서의 대처법과 노하우&rdquo;</span>. 셋다 분야는 다르지만 저에게는 다르지 않다고 느껴졌습니다.
               </p>
               <p>
                 이러한 문서화와 더불어 저는 <span className="font-bold text-gray-200">AI를 사용하는것</span>이 상급자와의 격차를 따라잡고 혼자 <span className="font-bold text-gray-200">개발 관련된 공부를 하는것에 매우 큰 도움</span>이 된다고 생각했습니다. <span className="font-bold text-gray-200">저는 AI를 활용하는 개발자라는 것이 부끄럽지 않습니다</span> <span className="font-bold text-gray-200">상급자와의 차이를 더 빠르게 따라잡을 수 있고, 정보를 더 많이 얻을 수 있고, 제가 공부를 하는 것에 도움이 된다면 얼마든지 AI를 활용하겠습니다</span>. 하지만 저는 <span className="font-bold text-gray-200">좋은 AI 사용은 뛰어난 개발 지식을 가지고 있는 사람이 할 수 있다</span>고 생각합니다. 많은 개발 관련 지식, 아키텍쳐에 관한 지식, 디자인 패턴에 관한 지식 등등을 가지고 있어야 AI에게 상세한 프롬프트를 제공하고 효율적으로 업무를 할 수 있다고 생각합니다.
               </p>
               <p className="font-bold text-gray-200 text-xl mt-6">
-                "저는 문서화를 통해 끊임없이 지식을 축적하고 그 지식을 AI와 함께 사용하여 더 나은 개발자가 되기 위해 노력하는 개발자입니다."
+                &ldquo;저는 문서화를 통해 끊임없이 지식을 축적하고 그 지식을 AI와 함께 사용하여 더 나은 개발자가 되기 위해 노력하는 개발자입니다.&rdquo;
               </p>
             </div>
           </div>
