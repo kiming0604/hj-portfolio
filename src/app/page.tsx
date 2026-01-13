@@ -17,7 +17,8 @@ import {
   UserGroupIcon,
   HomeIcon,
   CurrencyDollarIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  ChevronDownIcon
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
 // import Link from "next/link"
@@ -40,6 +41,16 @@ interface LifeChapter {
   personIcon: string
 }
 
+interface Experience {
+  id: number
+  period: string
+  company: string
+  status?: string
+  role: string
+  description: string[]
+  skills: string[]
+}
+
 // Notion Icon Component
 const NotionIcon = ({ className }: { className?: string }) => (
   <svg
@@ -55,7 +66,12 @@ const NotionIcon = ({ className }: { className?: string }) => (
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Frontend")
   const [currentSection, setCurrentSection] = useState(0)
+  const [scrollPosition, setScrollPosition] = useState(0)
   const [showHeader, setShowHeader] = useState(false)
+  const [expandedProjects, setExpandedProjects] = useState<Record<string, boolean>>({
+    "bootcamp": false,
+    "snax": false
+  })
 
   const tabs = [
     { id: "Frontend", label: "Frontend" },
@@ -148,6 +164,80 @@ export default function Home() {
     }
   ]
 
+  const experiences: Experience[] = [
+    {
+      id: 1,
+      period: "2025.09 ~",
+      company: "J&W Labs",
+      status: "재직 중",
+      role: "Backend Developer",
+      description: [
+        "J&W Labs에서 백엔드 개발자로 활동 중입니다.",
+        "현재 진행 중인 프로젝트의 백엔드 API 개발 및 인프라 구축을 담당하고 있습니다."
+      ],
+      skills: ["Java", "Spring Boot", "MySQL", "Redis", "Kubernetes", "Docker"]
+    },
+    {
+      id: 2,
+      period: "2025.05 ~ 2025.08",
+      company: "(주)뉴웨이블 (Newavel Co., Ltd)",
+      role: "Frontend web3 Development Team Member",
+      description: [
+        "LPD, MG8, CVTX 등 토큰의 락업/언락 작업을 담당했습니다.",
+        "HAR-W3C 웹페이지 프론트엔드 개발을 수행했습니다.",
+        "Web3 기반의 블록체인 서비스 프론트엔드 개발 경험을 쌓았습니다."
+      ],
+      skills: ["React", "TypeScript", "Web3", "Ethereum", "Solidity"]
+    },
+    {
+      id: 3,
+      period: "2024.06 ~ 2025.01",
+      company: "솔데스크",
+      role: "Backend/Server Development Bootcamp Student",
+      description: [
+        "국비지원 부트캠프에서 백엔드/서버 개발 과정을 수료했습니다.",
+        "Java, MySQL, JavaScript, React 등 다양한 기술을 학습했습니다.",
+        "2번의 프로젝트에서 팀장 역할을 수행하며 프로젝트 관리와 팀 협업 능력을 키웠습니다."
+      ],
+      skills: ["Java", "Spring Boot", "MySQL", "JavaScript", "React"]
+    },
+    {
+      id: 4,
+      period: "2022.05 ~ 2023.06",
+      company: "몽크실용음악학원",
+      role: "Vocal Lesson Hobby Class Temporary/Freelancer",
+      description: [
+        "취미반 회원 20명 이상을 대상으로 보컬 레슨을 진행했습니다.",
+        "개인 맞춤형 보컬 교육 프로그램을 개발하고 적용했습니다.",
+        "코로나 확진으로 인한 건강 악화로 인해 퇴직했습니다."
+      ],
+      skills: []
+    },
+    {
+      id: 5,
+      period: "2018.10 ~ 2019.05",
+      company: "명진건설",
+      role: "Construction Labor Site Worker Temporary/Freelancer",
+      description: [
+        "경기도 화성시 동탄동 신축 아파트 건설현장에서 근무했습니다.",
+        "건설 현장 노동을 통해 노동의 가치와 책임감을 배웠습니다.",
+        "군 입대를 위해 퇴직했습니다."
+      ],
+      skills: []
+    },
+    {
+      id: 6,
+      period: "2018.07 ~ 2018.09",
+      company: "(주)이랜드파크외식사업부본점",
+      role: "Cook (Korean Cuisine) Temporary/Freelancer",
+      description: [
+        "한식 조리사로 근무하며 다양한 한식 메뉴를 준비했습니다.",
+        "외식업계의 빠른 업무 환경에 적응하며 효율성을 배웠습니다."
+      ],
+      skills: []
+    }
+  ]
+
   const skillsData: Record<string, Skill[]> = {
     Frontend: [
       {
@@ -222,45 +312,171 @@ export default function Home() {
   }
 
   useEffect(() => {
+    let isScrolling = false
+    let scrollTimeout: NodeJS.Timeout | null = null
+    let lastScrollTime = 0
+
     const handleScroll = () => {
-      const scrollPosition = window.scrollY
+      if (isScrolling) return
+      
+      const scrollPos = window.scrollY
       const windowHeight = window.innerHeight
-      const sectionIndex = Math.floor(scrollPosition / windowHeight)
-      setCurrentSection(Math.min(sectionIndex, 9)) // 총 10개 섹션 (9개 챕터 + 1개 About)
+      const sectionIndex = Math.floor(scrollPos / windowHeight)
+      
+      // 총 10개 섹션: 0-8 (9개 챕터), 9 (About), 10+ (일반 스크롤 섹션)
+      setCurrentSection(sectionIndex)
+      setScrollPosition(scrollPos)
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    const handleWheel = (e: WheelEvent) => {
+      // 일반 스크롤 섹션(10 이상)에서는 기본 동작 허용
+      if (currentSection >= 10) {
+        return
+      }
+
+      const now = Date.now()
+      if (now - lastScrollTime < 800) {
+        e.preventDefault()
+        return
+      }
+
+      if (isScrolling) {
+        e.preventDefault()
+        return
+      }
+
+      const windowHeight = window.innerHeight
+      const deltaY = e.deltaY
+      const scrollDown = deltaY > 0
+      const scrollUp = deltaY < 0
+
+      // About Section (9)을 건너뛰지 않도록 체크
+      if (currentSection === 8 && scrollDown) {
+        // 8에서 다음으로: 반드시 9로 이동
+        e.preventDefault()
+        isScrolling = true
+        lastScrollTime = now
+        window.scrollTo({
+          top: 9 * windowHeight,
+          behavior: 'smooth'
+        })
+        setCurrentSection(9)
+        setScrollPosition(9 * windowHeight)
+        
+        if (scrollTimeout) clearTimeout(scrollTimeout)
+        scrollTimeout = setTimeout(() => {
+          isScrolling = false
+        }, 800)
+        return
+      }
+
+      if (currentSection === 9 && scrollDown) {
+        // 9에서 다음으로: 10으로 이동
+        e.preventDefault()
+        isScrolling = true
+        lastScrollTime = now
+        window.scrollTo({
+          top: 10 * windowHeight,
+          behavior: 'smooth'
+        })
+        setCurrentSection(10)
+        setScrollPosition(10 * windowHeight)
+        
+        if (scrollTimeout) clearTimeout(scrollTimeout)
+        scrollTimeout = setTimeout(() => {
+          isScrolling = false
+        }, 800)
+        return
+      }
+
+      if (currentSection === 10 && scrollUp) {
+        // 10에서 이전으로: 반드시 9로 이동
+        e.preventDefault()
+        isScrolling = true
+        lastScrollTime = now
+        window.scrollTo({
+          top: 9 * windowHeight,
+          behavior: 'smooth'
+        })
+        setCurrentSection(9)
+        setScrollPosition(9 * windowHeight)
+        
+        if (scrollTimeout) clearTimeout(scrollTimeout)
+        scrollTimeout = setTimeout(() => {
+          isScrolling = false
+        }, 800)
+        return
+      }
+
+      // 다른 섹션 간 이동은 기본 동작 허용하되, 스크롤 위치 조정
+      if (currentSection < 9) {
+        const targetSection = scrollDown 
+          ? Math.min(currentSection + 1, 9)
+          : Math.max(currentSection - 1, 0)
+        
+        if (targetSection !== currentSection) {
+          e.preventDefault()
+          isScrolling = true
+          lastScrollTime = now
+          window.scrollTo({
+            top: targetSection * windowHeight,
+            behavior: 'smooth'
+          })
+          setCurrentSection(targetSection)
+          setScrollPosition(targetSection * windowHeight)
+          
+          if (scrollTimeout) clearTimeout(scrollTimeout)
+          scrollTimeout = setTimeout(() => {
+            isScrolling = false
+          }, 800)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    handleScroll() // 초기 로드 시 한 번 실행
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('wheel', handleWheel)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+    }
+  }, [currentSection])
 
   const getSectionStyle = (sectionIndex: number) => {
     const isActive = currentSection === sectionIndex
     const isNext = currentSection === sectionIndex + 1
     const isPrev = currentSection === sectionIndex - 1
+    const isFarAway = Math.abs(currentSection - sectionIndex) > 1
 
     if (isActive) {
       return {
         opacity: 1,
         transform: 'translateY(0)',
-        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out'
+        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out',
+        pointerEvents: 'auto' as const,
+        visibility: 'visible' as const,
+        display: 'flex' as const
       }
-    } else if (isNext) {
+    } else if (isNext || isPrev) {
       return {
         opacity: 0,
-        transform: 'translateY(20px)',
-        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out'
-      }
-    } else if (isPrev) {
-      return {
-        opacity: 0,
-        transform: 'translateY(-20px)',
-        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out'
+        transform: isNext ? 'translateY(20px)' : 'translateY(-20px)',
+        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out',
+        pointerEvents: 'none' as const,
+        visibility: 'visible' as const,
+        display: 'flex' as const
       }
     } else {
+      // Far away sections - completely hidden
       return {
         opacity: 0,
         transform: 'translateY(0)',
-        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out'
+        transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out',
+        pointerEvents: 'none' as const,
+        visibility: 'hidden' as const,
+        display: 'none' as const
       }
     }
   }
@@ -532,12 +748,20 @@ export default function Home() {
         onMouseEnter={() => setShowHeader(true)}
       ></div>
       {/* Life Story Chapters */}
-      {lifeChapters.map((chapter, index) => (
-        <section 
-          key={chapter.id} 
-          className="h-screen flex items-center justify-center fixed inset-0"
-          style={getSectionStyle(index)}
-        >
+      {lifeChapters.map((chapter, index) => {
+        const style = getSectionStyle(index)
+        // Only render if section is active, next, or prev (not far away)
+        if (style.display === 'none') return null
+        
+        return (
+          <section 
+            key={chapter.id} 
+            className="h-screen flex items-center justify-center fixed inset-0"
+            style={{ 
+              ...style, 
+              zIndex: currentSection === index ? 10 : currentSection > index ? 5 : 1 
+            }}
+          >
           <div className="max-w-4xl mx-auto px-8 text-center">
             <div className={`w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-r ${chapter.bgColor} flex items-center justify-center`}>
               <chapter.icon className="w-12 h-12 text-white" />
@@ -563,7 +787,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-      ))}
+        )
+      })}
 
       {/* Fixed Progress Bar - Always Visible */}
       {currentSection < 9 && (
@@ -611,40 +836,65 @@ export default function Home() {
         </div>
       )}
 
-      {/* About Section */}
-      <section 
-        className="h-screen flex items-center justify-center fixed inset-0"
-        style={getSectionStyle(9)}
-      >
-        <div className="max-w-4xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-gray-100 mb-8 text-center">
-            다양한 경험을 통한 성장
-          </h2>
-          <div className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
-            <p className="text-gray-300 leading-relaxed text-lg mb-6">
-              저는 다양한 경험을 통해 소통 능력과 책임감을 길러왔습니다. 보컬 레슨으로 취미반 회원들을 지도하며 소통의 중요성을 배웠고, 건설 및 외식 분야에서의 경험을 통해 노동의 가치를 몸소 느꼈습니다.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-lg mb-6">
-              그러나 제게 가장 의미 있었던 경험은 군대에서 통신 분대장으로서의 역할이었습니다. 사단 분대장 교육대에서 사단장 표창을 받으며 IT와 처음으로 접점을 가지게 되었고, 이는 제 진로의 방향성을 결정짓는 계기가 되었습니다.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-lg mb-6">
-              이 경험을 바탕으로 국비지원 학원에서 백엔드/서버 개발, Java, MySQL, JavaScript, React 등 다양한 기술을 빠르게 습득하였으며, 고졸 비전공자 노베이스 개발자임에도 강사님과 학원생들의 인정을 받아, 두 차례의 프로젝트에서 팀장 역할을 수행하며 효율적인 프로젝트 관리와 팀원 간의 원활한 소통을 이끌었습니다.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-lg">
-              저는 어떤 환경에서도 빠르게 적응하며 주어진 일의 가치를 소중히 여깁니다. 이러한 태도는 제가 IT 분야에서 꾸준히 성장하고 기여할 수 있는 기반이 되리라 확신합니다. 코로나 이후 취업이 어려운 시기였음에도 불구하고, 제 자신을 갈고 닦아 개발자로 취업하여 Web3 기반의 혁신적인 프로젝트에 기여할 수 있었습니다. 앞으로도 배우고 도전하는 자세를 통해 더 나은 팀원, 나아가 더 나은 개발자가 되기 위해 노력하겠습니다.
-            </p>
+      {/* About Section - "다양한 경험을 통한 성장" */}
+      {(() => {
+        const baseStyle = getSectionStyle(9)
+        // Only render if section is active, next, or prev (not far away)
+        // getSectionStyle이 display: 'none'을 반환하면 완전히 제거하여 겹침 방지
+        if (baseStyle.display === 'none') return null
+        
+        // 페이드 아웃 적용 시점을 앞당기기: currentSection === 9일 때도 스크롤 위치에 따라 opacity 조절
+        let finalOpacity = baseStyle.opacity
+        if (currentSection === 9) {
+          const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 1000
+          const aboutSectionStart = 9 * windowHeight
+          const scrollProgress = (scrollPosition - aboutSectionStart) / windowHeight
+          // 섹션의 20% 지점부터 페이드 아웃 시작 (더 앞당김)
+          if (scrollProgress > 0.2) {
+            finalOpacity = Math.max(0, 1 - (scrollProgress - 0.2) * 1.25) // 0.2~1.0 구간에서 1->0으로 페이드
+          }
+        }
+        
+        return (
+          <section 
+            className="h-screen flex items-center justify-center fixed inset-0"
+            style={{ 
+              ...baseStyle,
+              opacity: finalOpacity,
+              zIndex: currentSection === 9 ? 10 : currentSection === 10 ? 1 : 0
+            }}
+          >
+          <div className="max-w-4xl mx-auto px-8">
+            <h2 className="text-4xl font-bold text-gray-100 mb-8 text-center">
+              다양한 경험을 통한 성장
+            </h2>
+            <div className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
+              <p className="text-gray-300 leading-relaxed text-lg mb-6">
+                저는 다양한 경험을 통해 소통 능력과 책임감을 길러왔습니다. 보컬 레슨으로 취미반 회원들을 지도하며 소통의 중요성을 배웠고, 건설 및 외식 분야에서의 경험을 통해 노동의 가치를 몸소 느꼈습니다.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-lg mb-6">
+                그러나 제게 가장 의미 있었던 경험은 군대에서 통신 분대장으로서의 역할이었습니다. 사단 분대장 교육대에서 사단장 표창을 받으며 IT와 처음으로 접점을 가지게 되었고, 이는 제 진로의 방향성을 결정짓는 계기가 되었습니다.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-lg mb-6">
+                이 경험을 바탕으로 국비지원 학원에서 백엔드/서버 개발, Java, MySQL, JavaScript, React 등 다양한 기술을 빠르게 습득하였으며, 고졸 비전공자 노베이스 개발자임에도 강사님과 학원생들의 인정을 받아, 두 차례의 프로젝트에서 팀장 역할을 수행하며 효율적인 프로젝트 관리와 팀원 간의 원활한 소통을 이끌었습니다.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                저는 어떤 환경에서도 빠르게 적응하며 주어진 일의 가치를 소중히 여깁니다. 이러한 태도는 제가 IT 분야에서 꾸준히 성장하고 기여할 수 있는 기반이 되리라 확신합니다. 코로나 이후 취업이 어려운 시기였음에도 불구하고, 제 자신을 갈고 닦아 개발자로 취업하여 Web3 기반의 혁신적인 프로젝트에 기여할 수 있었습니다. 앞으로도 배우고 도전하는 자세를 통해 더 나은 팀원, 나아가 더 나은 개발자가 되기 위해 노력하겠습니다.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+        )
+      })()}
 
       {/* Spacer for animated sections */}
       <div style={{ height: `${10 * 100}vh` }}></div>
 
       {/* Header - Personal Info */}
-      <section id="about-section" className="min-h-screen flex items-center justify-center text-center py-20">
+      <section id="about-section" className="min-h-screen flex items-center justify-center text-center pt-48 pb-0">
         <div>
           <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-green-400">
-            <Image 
+            <Image
               src="/profile.jpg" 
               alt="김현재 프로필 사진" 
               width={128} 
@@ -656,7 +906,7 @@ export default function Home() {
             김현재
           </h1>
           <p className="text-2xl text-green-400 mb-8">
-            Frontend Developer
+            Full-stack Developer
           </p>
           <div className="flex justify-center space-x-6 text-sm text-gray-400">
             <div className="flex items-center">
@@ -671,6 +921,134 @@ export default function Home() {
               <MapPinIcon className="w-4 h-4 mr-1" />
               <span>경기도 용인시</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience-section" className="min-h-screen pt-0 pb-20">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="mb-12">
+            <h2 className="text-5xl font-bold text-blue-500">
+              EXPERIENCE
+            </h2>
+          </div>
+          
+          <div className="space-y-8">
+            {experiences.map((exp) => {
+              const parts = exp.period.split(' ~ ')
+              const start = parts[0] || ''
+              const end = parts[1] || ''
+              
+              // 날짜 파싱 함수: "2025.09" -> "2025-09-01"
+              const parseDate = (dateStr: string) => {
+                if (!dateStr) return null
+                const normalized = dateStr.trim().replace(/\./g, '-')
+                // "2025-09" 형식을 "2025-09-01"로 변환
+                const parts = normalized.split('-')
+                if (parts.length === 2) {
+                  return new Date(`${parts[0]}-${parts[1]}-01`)
+                }
+                return new Date(normalized)
+              }
+              
+              const startDate = parseDate(start)
+              const endDate = !end || end.trim() === '' || end === '현재'
+                ? new Date()
+                : parseDate(end)
+              
+              if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                return (
+                  <div key={exp.id} className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-gray-400 text-sm">{exp.period}</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-100 mb-2">
+                          {exp.company}
+                        </h3>
+                        <p className="text-lg text-green-400 mb-4">
+                          {exp.role}
+                        </p>
+                      </div>
+                    </div>
+                    <ul className="space-y-2 mb-6">
+                      {exp.description.map((desc, idx) => (
+                        <li key={idx} className="text-gray-300 leading-relaxed flex items-start">
+                          <span className="text-green-400 mr-2">•</span>
+                          <span>{desc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {exp.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {exp.skills.map((skill, idx) => (
+                          <span 
+                            key={idx} 
+                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded text-sm"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              
+              const months = Math.max(0, (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth()))
+              const years = Math.floor(months / 12)
+              const remainingMonths = months % 12
+              const duration = years > 0 
+                ? `${years}년 ${remainingMonths}개월` 
+                : `${remainingMonths}개월`
+              
+              return (
+                <div key={exp.id} className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-gray-400 text-sm">{exp.period}</span>
+                        {exp.status && (
+                          <span className="px-3 py-1 bg-blue-600 text-white rounded text-xs">
+                            {exp.status} {duration}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-100 mb-2">
+                        {exp.company}
+                      </h3>
+                      <p className="text-lg text-green-400 mb-4">
+                        {exp.role}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <ul className="space-y-2 mb-6">
+                    {exp.description.map((desc, idx) => (
+                      <li key={idx} className="text-gray-300 leading-relaxed flex items-start">
+                        <span className="text-green-400 mr-2">•</span>
+                        <span>{desc}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {exp.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {exp.skills.map((skill, idx) => (
+                        <span 
+                          key={idx} 
+                          className="px-3 py-1 bg-gray-700 text-gray-300 rounded text-sm"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -714,7 +1092,7 @@ export default function Home() {
                     <div key={index} className="flex items-start space-x-6">
                       <div className="w-16 h-16 rounded-full border-2 border-gray-600 flex items-center justify-center flex-shrink-0">
                         {skill.icon ? (
-                          <Image
+          <Image
                             src={skill.icon}
                             alt={skill.name}
                             width={32}
@@ -747,6 +1125,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Development Philosophy Section */}
+      <section id="philosophy-section" className="min-h-screen py-20 relative z-10">
+        <div className="max-w-6xl mx-auto px-8">
+          <h2 className="text-4xl font-bold text-gray-100 mb-12 text-center">
+            My Thoughts on Development
+          </h2>
+          <div className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
+            <div className="text-gray-400 text-lg leading-relaxed space-y-4">
+              <p>
+                저는 개발자로서 코드를 작성하는 것 보다 코드를 작성하는 과정에서 발생하는 문제를 해결하고 그 과정을 기록하고 기억하는 것이 더 중요하다고 생각합니다.
+              </p>
+              <p>
+                저는 상급자와 하급자의 차이는 경험에서 나온다고 생각합니다. 제가 여러 직종을 거치며 처음 일을 시작 할 때 마다 <span className="font-bold text-gray-200">"내가 3번에 걸쳐 할 일을 어떻게 상급자는 1번만 해도 해결될까?"</span> 그 이유에 대해서 스스로 고민했었습니다 저의 결론은 <span className="font-bold text-gray-200">"여러가지 상황을 맞닥뜨리고 그것을 해결하면서 생긴 노하우와 경험"</span>이 그 차이를 만든다는 것 입니다. 여기서 저는 또 생각했습니다 <span className="font-bold text-gray-200">"어떻게 해야 그 차이를 더 빠르게 줄일 수 있을까?"</span> 그 답은 <span className="font-bold text-gray-200">"문서화"</span> 였습니다 <span className="font-bold text-gray-200">"요리를 하며 본 주방장님의 칼질과 조리순서에 대한 노하우, 건설현장에서 노동을 하며 본 반장님의 노하우, 개발 회사를 다니며 사수에게 배운 여러가지 상황에서의 대처법과 노하우"</span>. 셋다 분야는 다르지만 저에게는 다르지 않다고 느껴졌습니다.
+              </p>
+              <p>
+                이러한 문서화와 더불어 저는 <span className="font-bold text-gray-200">AI를 사용하는것</span>이 상급자와의 격차를 따라잡고 혼자 <span className="font-bold text-gray-200">개발 관련된 공부를 하는것에 매우 큰 도움</span>이 된다고 생각했습니다. <span className="font-bold text-gray-200">저는 AI를 활용하는 개발자라는 것이 부끄럽지 않습니다</span> <span className="font-bold text-gray-200">상급자와의 차이를 더 빠르게 따라잡을 수 있고, 정보를 더 많이 얻을 수 있고, 제가 공부를 하는 것에 도움이 된다면 얼마든지 AI를 활용하겠습니다</span>. 하지만 저는 <span className="font-bold text-gray-200">좋은 AI 사용은 뛰어난 개발 지식을 가지고 있는 사람이 할 수 있다</span>고 생각합니다. 많은 개발 관련 지식, 아키텍쳐에 관한 지식, 디자인 패턴에 관한 지식 등등을 가지고 있어야 AI에게 상세한 프롬프트를 제공하고 효율적으로 업무를 할 수 있다고 생각합니다.
+              </p>
+              <p className="font-bold text-gray-200 text-xl mt-6">
+                "저는 문서화를 통해 끊임없이 지식을 축적하고 그 지식을 AI와 함께 사용하여 더 나은 개발자가 되기 위해 노력하는 개발자입니다."
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Projects Section */}
       <section id="projects-section" className="min-h-screen py-12 relative z-10">
         <div className="max-w-6xl mx-auto px-8">
@@ -754,62 +1157,164 @@ export default function Home() {
             <BriefcaseIcon className="w-8 h-8 mr-3 text-green-400" />
             Projects
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
-              <h3 className="font-semibold text-gray-100 mb-4 text-xl">CodeSync 프로젝트</h3>
-              <div className="text-gray-400 mb-6 text-lg space-y-3">
-                <p>프론트엔드는 React, 백엔드는 Spring Boot를 사용했습니다.</p>
-                <p>WebSocket을 활용한 실시간 파일 잠금 기능을 구현하여 협업 환경에서의 데이터 충돌을 방지했습니다.</p>
-                <p>MariaDB 및 Spring Boot 기반의 백엔드 성능 최적화를 진행하여 안정적인 데이터 관리가 가능하도록 개선했습니다.</p>
-                <p>Git과 GitHub을 활용한 버전 관리 및 코드 리뷰 프로세스를 도입하여 협업 효율을 높였습니다.</p>
-              </div>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">React</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">WebSocket</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">MariaDB</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Git</span>
-              </div>
-              <div 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const url = 'https://www.notion.so/2-codeSync-17a1f7a731ad80cf807cc72280a10cd2?source=copy_link';
-                  window.open(url, '_blank', 'noopener,noreferrer');
-                }}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer relative z-20"
-                style={{ cursor: 'pointer', zIndex: 9999 }}
+          <div className="space-y-4">
+            {/* Bootcamp Projects Dropdown */}
+            <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+              <button
+                onClick={() => setExpandedProjects(prev => ({ ...prev, bootcamp: !prev.bootcamp }))}
+                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-gray-700 transition-colors"
               >
-                <NotionIcon className="w-5 h-5 mr-2" />
-                Notion
-              </div>
+                <h3 className="font-semibold text-gray-100 text-xl">Bootcamp Projects</h3>
+                <ChevronDownIcon 
+                  className={`w-6 h-6 text-green-400 transition-transform duration-300 ${
+                    expandedProjects.bootcamp ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {expandedProjects.bootcamp && (
+                <div className="px-8 pb-8 space-y-6">
+                  {/* CodeSync Project */}
+                  <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h4 className="font-semibold text-gray-100 mb-4 text-lg">CodeSync</h4>
+                    <div className="text-gray-400 mb-6 text-base space-y-3">
+                      <p>프론트엔드는 React, 백엔드는 Spring Boot를 사용했습니다.</p>
+                      <p>WebSocket을 활용한 실시간 파일 잠금 기능을 구현하여 협업 환경에서의 데이터 충돌을 방지했습니다.</p>
+                      <p>MariaDB 및 Spring Boot 기반의 백엔드 성능 최적화를 진행하여 안정적인 데이터 관리가 가능하도록 개선했습니다.</p>
+                      <p>Git과 GitHub을 활용한 버전 관리 및 코드 리뷰 프로세스를 도입하여 협업 효율을 높였습니다.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">React</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">WebSocket</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">MariaDB</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Git</span>
+                    </div>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = 'https://www.notion.so/2-codeSync-17a1f7a731ad80cf807cc72280a10cd2?source=copy_link';
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
+                    >
+                      <NotionIcon className="w-5 h-5 mr-2" />
+                      Notion
+                    </div>
+                  </div>
+                  
+                  {/* HypePop Project */}
+                  <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h4 className="font-semibold text-gray-100 mb-4 text-lg">HypePop</h4>
+                    <div className="text-gray-400 mb-6 text-base space-y-3">
+                      <p>사용자 경험(UX)을 고려한 UI/UX 설계 및 API 연동을 담당했습니다.</p>
+                      <p>JSP와 Spring Boot 기반의 RESTful API 설계를 진행하며 프론트엔드와 백엔드 간의 원활한 데이터 흐름을 구현했습니다.</p>
+                      <p>이 과정에서 클라우드 환경에서의 데이터 관리, API 설계, 실시간 데이터 처리 등 핵심 기술에 대한 경험을 쌓았습니다.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">JSP</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">RESTful API</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">UI/UX</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Cloud</span>
+                    </div>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = 'https://www.notion.so/1-hypePop-1491f7a731ad808590e6f05d686bba4c?source=copy_link';
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
+                    >
+                      <NotionIcon className="w-5 h-5 mr-2" />
+                      Notion
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            <div className="bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-700">
-              <h3 className="font-semibold text-gray-100 mb-4 text-xl">HypePop 프로젝트</h3>
-              <div className="text-gray-400 mb-6 text-lg space-y-3">
-                <p>사용자 경험(UX)을 고려한 UI/UX 설계 및 API 연동을 담당했습니다.</p>
-                <p>JSP와 Spring Boot 기반의 RESTful API 설계를 진행하며 프론트엔드와 백엔드 간의 원활한 데이터 흐름을 구현했습니다.</p>
-                <p>이 과정에서 클라우드 환경에서의 데이터 관리, API 설계, 실시간 데이터 처리 등 핵심 기술에 대한 경험을 쌓았습니다.</p>
-              </div>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">JSP</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">RESTful API</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">UI/UX</span>
-                <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Cloud</span>
-              </div>
-              <div 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const url = 'https://www.notion.so/1-hypePop-1491f7a731ad808590e6f05d686bba4c?source=copy_link';
-                  window.open(url, '_blank', 'noopener,noreferrer');
-                }}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer relative z-20"
-                style={{ cursor: 'pointer', zIndex: 9999 }}
+
+            {/* SNAX CAT Dropdown */}
+            <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+              <button
+                onClick={() => setExpandedProjects(prev => ({ ...prev, snax: !prev.snax }))}
+                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-gray-700 transition-colors"
               >
-                <NotionIcon className="w-5 h-5 mr-2" />
-                Notion
-              </div>
+                <h3 className="font-semibold text-gray-100 text-xl">SNAX CAT</h3>
+                <ChevronDownIcon 
+                  className={`w-6 h-6 text-green-400 transition-transform duration-300 ${
+                    expandedProjects.snax ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {expandedProjects.snax && (
+                <div className="px-8 pb-8 space-y-6">
+                  {/* soc_parser Project */}
+                  <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h4 className="font-semibold text-gray-100 mb-4 text-lg">soc_parser</h4>
+                    <div className="text-gray-400 mb-6 text-base space-y-3">
+                      <p>게임 기획 데이터를 관리하는 자동화 시스템입니다. 기획자가 Excel 파일에 작성한 게임 데이터(아이템, 캐릭터, 상점, 레벨 등)를 자동으로 읽어서 데이터베이스에 저장하고, 게임 서버가 사용할 수 있는 형태로 변환하는 역할을 합니다.</p>
+                      <p>2-Tier Architecture를 사용하여 Excel DB(기획 데이터 저장소)와 API DB(게임 서버 데이터 저장소)를 분리하여 데이터의 안정성과 유지보수성을 확보했습니다.</p>
+                      <p>Apache POI를 활용한 Excel 파일 처리, Spring Data JPA를 통한 데이터베이스 접근, 대량 데이터 처리를 위한 Bulk Insert 및 병렬 처리 최적화를 구현했습니다.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Java</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Data JPA</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Apache POI</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">MariaDB</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Swagger</span>
+                    </div>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = 'https://www.notion.so/Parser-29d1f7a731ad8081b03bced0174554f2?source=copy_link';
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
+                    >
+                      <NotionIcon className="w-5 h-5 mr-2" />
+                      Notion
+                    </div>
+                  </div>
+                  
+                  {/* soc_cms Project */}
+                  <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h4 className="font-semibold text-gray-100 mb-4 text-lg">soc_cms</h4>
+                    <div className="text-gray-400 mb-6 text-base space-y-3">
+                      <p>SNAX CAT 게임을 위한 풀스택 CMS(Content Management System)입니다. 게임 데이터 관리, 사용자 관리, 랭킹 관리, 유지보수 공지 등 게임 운영에 필요한 다양한 기능을 제공합니다.</p>
+                      <p><strong className="text-gray-300">Backend (soc_cms_bff)</strong>: Spring Boot 기반의 RESTful API 서버로, QueryDSL을 활용한 복잡한 쿼리 처리, Spring Security를 통한 인증/인가, Rate Limiting을 통한 API 보호, Telegram Bot 연동 등을 구현했습니다.</p>
+                      <p><strong className="text-gray-300">Frontend (soc_cms_web)</strong>: React + TypeScript + Vite 기반의 모던 웹 애플리케이션으로, TanStack Query를 활용한 서버 상태 관리, Zustand를 활용한 클라이언트 상태 관리, Recharts를 활용한 데이터 시각화, React Router를 활용한 라우팅 등을 구현했습니다.</p>
+                      <p>EC2 + Nginx 구조로 배포하여 비용 효율적이고 안정적인 운영 환경을 구축했습니다.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Java</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">QueryDSL</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Security</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">React</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">TypeScript</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Vite</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">TanStack Query</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Zustand</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">MySQL</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Docker</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Nginx</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">AWS EC2</span>
+                    </div>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = 'https://www.notion.so/CMS-2d11f7a731ad809db497d4e1ba5b8b57?source=copy_link';
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
+                    >
+                      <NotionIcon className="w-5 h-5 mr-2" />
+                      Notion
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
