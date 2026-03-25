@@ -18,7 +18,8 @@ import {
   HomeIcon,
   CurrencyDollarIcon,
   BuildingOfficeIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  DocumentTextIcon
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
 // import Link from "next/link"
@@ -50,18 +51,6 @@ interface Experience {
   description: string[]
   skills: string[]
 }
-
-// Notion Icon Component
-const NotionIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.403-.793c1.635-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.747.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.68-1.632z"/>
-  </svg>
-)
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Frontend")
@@ -1191,13 +1180,12 @@ export default function Home() {
                     <div 
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = 'https://www.notion.so/2-codeSync-17a1f7a731ad80cf807cc72280a10cd2?source=copy_link';
-                        window.open(url, '_blank', 'noopener,noreferrer');
+                        window.open("https://www.notion.so/2-codeSync-17a1f7a731ad80cf807cc72280a10cd2?source=copy_link", "_blank", "noopener,noreferrer");
                       }}
                       className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
                     >
-                      <NotionIcon className="w-5 h-5 mr-2" />
-                      Notion
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      경력 기술서
                     </div>
                   </div>
                   
@@ -1219,13 +1207,12 @@ export default function Home() {
                     <div 
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = 'https://www.notion.so/1-hypePop-1491f7a731ad808590e6f05d686bba4c?source=copy_link';
-                        window.open(url, '_blank', 'noopener,noreferrer');
+                        window.open("https://www.notion.so/1-hypePop-1491f7a731ad808590e6f05d686bba4c?source=copy_link", "_blank", "noopener,noreferrer");
                       }}
                       className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
                     >
-                      <NotionIcon className="w-5 h-5 mr-2" />
-                      Notion
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      경력 기술서
                     </div>
                   </div>
                 </div>
@@ -1266,13 +1253,54 @@ export default function Home() {
                     <div 
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = 'https://www.notion.so/Parser-29d1f7a731ad8081b03bced0174554f2?source=copy_link';
-                        window.open(url, '_blank', 'noopener,noreferrer');
+                        window.open("/career/parser.pdf", "_blank", "noopener,noreferrer");
                       }}
                       className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
                     >
-                      <NotionIcon className="w-5 h-5 mr-2" />
-                      Notion
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      경력 기술서
+                    </div>
+                  </div>
+
+                  {/* SOC_BFF Project */}
+                  <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h4 className="font-semibold text-gray-100 mb-4 text-lg">SOC_BFF</h4>
+                    <div className="text-gray-400 mb-6 text-base space-y-3">
+                      <p>
+                        SNAX CAT(Telegram 웹게임) 클라이언트가 사용하는 BFF(Backend for Frontend) API 서버입니다. Spring Boot 3.3·Java 21 기반이며, Undertow를 내장 서블릿 컨테이너로 사용합니다. 빌드·에셋·랜드·상점·퀘스트·레이드·랭킹·로또·시즌패스·서브캐릭터·재화·결제·광고·우편·공지 등 게임 전반의 REST API를 제공하고, 텔레그램 봇·웹훅·SSE 알림·점검 모드 등 운영·실시간 기능도 함께 다룹니다.
+                      </p>
+                      <p>
+                        영속 계층은 Spring Data JPA와 MariaDB(HikariCP)를 사용하고, Redis와 Spring Cache를 활용합니다. Hibernate 2차 캐시는 JCache(Caffeine 프로바이더)로 구성되어 있으며, 배치 페치·EntityGraph 등으로 N+1과 로딩 전략을 조정합니다. springdoc-openapi로 <code className="text-green-400/90 text-sm">/api/**</code> 기준 Swagger UI를 제공하고, P6Spy로 SQL 관측, Actuator로 헬스·메트릭을 노출합니다.
+                      </p>
+                      <p>
+                        인증은 JWT와 Apple·Google ID 토큰 검증(JWKS)을 사용하고, 텔레그램 연동은 long polling 스타터 기반 봇·웹훅 컨트롤러로 처리합니다. 다국어 응답을 위한 메시지 번들(i18n), Slack 알림, 스케줄링된 헬스 체크 등 운영 편의 기능이 포함되어 있습니다. 대규모 부하 검증을 위해 k6·GitHub Actions·체크리스트 스크립트로 스트레스 테스트 파이프라인을 갖추고 있습니다.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Java 21</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Boot 3</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Undertow</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Spring Data JPA</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Hibernate</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">MariaDB</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Redis</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">JCache / Caffeine</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">SpringDoc</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">JWT</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Telegram Bot</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">WebFlux</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">P6Spy</span>
+                      <span className="px-3 py-2 bg-green-900 text-green-300 text-sm rounded">Actuator</span>
+                    </div>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open("/career/soc-bff.pdf", "_blank", "noopener,noreferrer");
+                      }}
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
+                    >
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      경력 기술서
                     </div>
                   </div>
                   
@@ -1303,13 +1331,12 @@ export default function Home() {
                     <div 
                       onClick={(e) => {
                         e.stopPropagation();
-                        const url = 'https://www.notion.so/CMS-2d11f7a731ad809db497d4e1ba5b8b57?source=copy_link';
-                        window.open(url, '_blank', 'noopener,noreferrer');
+                        window.open("/career/cms.pdf", "_blank", "noopener,noreferrer");
                       }}
                       className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white h-11 px-8 cursor-pointer"
                     >
-                      <NotionIcon className="w-5 h-5 mr-2" />
-                      Notion
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      경력 기술서
                     </div>
                   </div>
                 </div>
