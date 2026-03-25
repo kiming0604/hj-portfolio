@@ -3,8 +3,8 @@
 // import { Button } from "@/components/ui/button"
 import { 
   EnvelopeIcon, 
-  PhoneIcon, 
   MapPinIcon,
+  ChatBubbleLeftRightIcon,
   CodeBracketIcon,
   UserIcon,
   BriefcaseIcon,
@@ -902,8 +902,8 @@ export default function Home() {
               <span>kimhyunjae114@gmail.com</span>
             </div>
             <div className="flex items-center">
-              <PhoneIcon className="w-4 h-4 mr-1" />
-              <span>010-5898-5065</span>
+              <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1 shrink-0" />
+              <span>Please contact me via email.</span>
             </div>
             <div className="flex items-center">
               <MapPinIcon className="w-4 h-4 mr-1" />
